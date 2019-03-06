@@ -45,7 +45,7 @@ public class CashLRU<K, V> implements Cash<K, V>{
         if(value != null) {
 
             linkedHashMap.remove(key, value);
-            linkedHashMap.put(key, value);
+            put(key, value);
         }
 
         return value;
