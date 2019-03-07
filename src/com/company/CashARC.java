@@ -2,12 +2,12 @@ package com.company;
 
 import java.util.*;
 
-public class CashLFU<K, V> implements Cash<K, V>{
+public class CashARC<K, V> implements Cash<K, V>{
 
     private final int MAX_SIZE;
     private Map<K, Node<V>> linkedHashMap;
 
-    public CashLFU(int size) {
+    public CashARC(int size) {
 
         MAX_SIZE = size;
         linkedHashMap = new LinkedHashMap<>(MAX_SIZE);
@@ -17,45 +17,40 @@ public class CashLFU<K, V> implements Cash<K, V>{
     @Override
     public void put(K key, V value) {
 
-        Node<V> node = new Node<>(value);
+        Node<V> node = new Node<>(value, System.currentTimeMillis());
 
-        if(linkedHashMap.size() > MAX_SIZE) {
+        if(linkedHashMap.size() >= MAX_SIZE) {
+            System.out.println("size : " + linkedHashMap.size());
             remove();
         }
             linkedHashMap.put(key, node);
+        System.out.println("Элемент добавлен: " + key + "/ " + node.getValue());
     }
 
     private void remove() {
-        Node<V> node;
-        K key;
-        Date maxDate;
-        long minCount;
+
+        Node<V> node = null;
+        K key = null;
+        long minDate = -1;
+        long minCount = -1;
 
         for(Map.Entry<K, Node<V>> entry : linkedHashMap.entrySet()) {
             Node<V> currentNode = entry.getValue();
             K currentKey = entry.getKey();
-            if(currentNode.getCount() < minCount && currentNode.getDate() > maxDate) {
+            if((currentNode.getCount() < minCount || minCount < 0) || ((currentNode.getCount() == minCount & currentNode.getDate() < minDate) || minDate < 0)) {
                 node = currentNode;
                 key = currentKey;
                 minCount = currentNode.getCount();
-                maxDate = currentNode.getDate();
+                minDate = currentNode.getDate();
 
             }
 
         }
-
-        for(Map.Entry<K, Node<V>> entry : linkedHashMap.entrySet()) {
-            node = entry.getValue();
-            if(node.count == minCount) {
-                list.add(node);
-            }
-
+        if(node != null) {
+            System.out.println("Элемент remove: " + key + "/ " + node.getValue() + " count: " + node.getCount() + " date: " + node.getDate());
+            linkedHashMap.remove(key, node);
         }
 
-        for(Node<V> minCountNode : list) {
-            maxDate = minCountNode.getDate();
-            if(minCountNode.getDate())
-        }
     }
 
     @Override
@@ -85,12 +80,13 @@ public class CashLFU<K, V> implements Cash<K, V>{
     private class Node<V> {
 
         private final V value;
-        private Date date;
+        private long date;
         private long count;
 
-        public Node (V value) {
+        public Node (V value, long date) {
             this.value = value;
             this.count = 1;
+            this.date = date;
         }
 
         public V getValue() {
@@ -101,7 +97,7 @@ public class CashLFU<K, V> implements Cash<K, V>{
             return count;
         }
 
-        public Date getDate() {
+        public long getDate() {
             return date;
         }
 

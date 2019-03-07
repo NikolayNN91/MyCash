@@ -2,10 +2,11 @@ package com.company;
 
 public class Start implements Runnable{
 
-    CashLRU<Double, Double> cash = new CashLRU(10);
+    Cash<Integer, Integer> cash;
     Thread thread;
 
-    Start() {
+    Start(Cash cash) {
+        this.cash = cash;
         thread = new Thread(this, "Potokich");
         thread.start();
         if(thread.isAlive()) {
@@ -21,14 +22,23 @@ public class Start implements Runnable{
 
         int i=0;
         while (i<20) {
-            double a = Math.random()*100;
-            double b = Math.random()*100;
+            int a = (int)(Math.random()*15);
+            int b = (int)(Math.random()*15);
 
             cash.put(a,b);
-//            System.out.println(i);
             i++;
-//            System.out.println(a + ": " + b);
+
         }
+
+            System.out.println("Invocate get:");
+            if(cash.get(4)==null) cash.put(4, (int)(Math.random()*10));
+            if(cash.get(3)==null) cash.put(3, (int)(Math.random()*10));
+            if(cash.get(3)==null) cash.put(3, (int)(Math.random()*10));
+            if(cash.get(3)==null) cash.put(3, (int)(Math.random()*10));
+            if(cash.get(7)==null) cash.put(7, (int)(Math.random()*10));
+            if(cash.get(5)==null) cash.put(5, (int)(Math.random()*10));
+            if(cash.get(0)==null) cash.put(0, (int)(Math.random()*10));
+            if(cash.get(4)==null) cash.put(4, (int)(Math.random()*10));
 
     }
 
