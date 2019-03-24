@@ -1,9 +1,10 @@
 package com.company;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Circle {
+public class Circle implements Serializable {
 
 
     public Object o;

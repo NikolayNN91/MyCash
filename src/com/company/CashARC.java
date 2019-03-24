@@ -4,6 +4,9 @@ import java.util.*;
 
 public class CashARC<K, V> implements Cash<K, V>{
 
+    //TODO -возможно сделать методы FileRW статическими
+    FileRW<K, Node<V>> fileRW = new FileRW<>();
+
     private final int MAX_SIZE;
     private Map<K, Node<V>> linkedHashMap;
 
@@ -14,22 +17,26 @@ public class CashARC<K, V> implements Cash<K, V>{
 
     }
 
+    //возвращает элемент, который был вытеснен при добавлении нового элемента, либо null если элементы не удалялись
     @Override
-    public void put(K key, V value) {
+    public Map.Entry<K, V> put(K key, V value) {
+        Map.Entry<K, V> removeEntry = null;
 
         Node<V> node = new Node<>(value, System.currentTimeMillis());
 
         if(linkedHashMap.size() >= MAX_SIZE) {
             System.out.println("size : " + linkedHashMap.size());
-            remove();
+            removeEntry = remove();
         }
             linkedHashMap.put(key, node);
         System.out.println("Элемент добавлен: " + key + "/ " + node.getValue());
+        return removeEntry;
     }
 
-    private void remove() {
+    private Map.Entry<K, V> remove() {
 
         Node<V> node = null;
+        Map.Entry<K, V> removeEntry;
         K key = null;
         long minDate = -1;
         long minCount = -1;
@@ -47,9 +54,12 @@ public class CashARC<K, V> implements Cash<K, V>{
 
         }
         if(node != null) {
+            removeEntry = new AbstractMap.SimpleEntry<K, V> (key, node.getValue());
             System.out.println("Элемент remove: " + key + "/ " + node.getValue() + " count: " + node.getCount() + " date: " + node.getDate());
             linkedHashMap.remove(key, node);
+            return removeEntry;
         }
+        return null;
 
     }
 

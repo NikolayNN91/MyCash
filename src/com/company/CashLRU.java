@@ -6,14 +6,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class CashLRU<K, V> implements Cash<K, V>{
+public class CashLRU<K, V> implements Cash<K, V> {
 
     private final int MAX_SIZE;
     private Map<K, V> linkedHashMap;
 
     public CashLRU(int size) {
         MAX_SIZE = size;
-        linkedHashMap = new LinkedHashMap<>(MAX_SIZE) {
+        linkedHashMap = new LinkedHashMap<K, V>(MAX_SIZE) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
                 return linkedHashMap.size() > MAX_SIZE;
@@ -22,18 +22,26 @@ public class CashLRU<K, V> implements Cash<K, V>{
 
     }
 
+    //возвращает последний элемент, который был вытеснен из Мар при добавлении нового элемента, если элемент не удалялся возвращает null
     @Override
-    public void put(K key, V value) {
+    public Map.Entry<K, V> put(K key, V value) {
+        Map.Entry<K, V> lastEntry = null;
         System.out.println(key + ": " + value);
+
         for (Map.Entry<K, V> entry : linkedHashMap.entrySet()) {
             if (entry.getKey().equals(key)) {
                 linkedHashMap.remove(entry.getKey(), entry.getValue());
-                linkedHashMap.put(key, value);
-
-            } else {
-                linkedHashMap.put(key, value);
             }
+            if (linkedHashMap.size() > MAX_SIZE) {
+                for (Map.Entry<K, V> removeEntry : linkedHashMap.entrySet()) {
+                    lastEntry = removeEntry;
+                }
+            }
+            linkedHashMap.put(key, value);
+            return lastEntry;
+
         }
+        return null;
 
     }
 
@@ -42,7 +50,7 @@ public class CashLRU<K, V> implements Cash<K, V>{
 
         V value = linkedHashMap.get(key);
 
-        if(value != null) {
+        if (value != null) {
 
             linkedHashMap.remove(key, value);
             put(key, value);
