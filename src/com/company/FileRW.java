@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Map;
 import java.util.UUID;
 
-public class FileRW<K, V> {
+public class FileRW<K, V extends Serializable> {
 
     private String path;
 
@@ -14,7 +14,7 @@ public class FileRW<K, V> {
             directory.mkdir();
         }
 
-        path = "resource\\" + UUID.randomUUID().toString() + ".txt";
+        path = "resource/" + UUID.randomUUID().toString() + ".txt";
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(new File(path));
              ObjectOutputStream out = new ObjectOutputStream(fileOutputStream)) {
@@ -33,6 +33,9 @@ public class FileRW<K, V> {
              ObjectInputStream in = new ObjectInputStream(fileInputStream)) {
 
             V value = (V) in.readObject();
+
+            System.out.println("read file from file: " + value);
+
             return value;
 
         } catch (FileNotFoundException e) {

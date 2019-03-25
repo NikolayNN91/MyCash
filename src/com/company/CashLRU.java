@@ -1,19 +1,20 @@
 package com.company;
 
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class CashLRU<K, V> implements Cash<K, V> {
+public class CashLRU<K, V extends Serializable> implements Cash<K, V> {
 
     private final int MAX_SIZE;
     private Map<K, V> linkedHashMap;
 
     public CashLRU(int size) {
         MAX_SIZE = size;
-        linkedHashMap = new LinkedHashMap<K, V>(MAX_SIZE) {
+        linkedHashMap = new LinkedHashMap<>(MAX_SIZE) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
                 return linkedHashMap.size() > MAX_SIZE;
@@ -23,25 +24,34 @@ public class CashLRU<K, V> implements Cash<K, V> {
     }
 
     //возвращает последний элемент, который был вытеснен из Мар при добавлении нового элемента, если элемент не удалялся возвращает null
+
     @Override
     public Map.Entry<K, V> put(K key, V value) {
         Map.Entry<K, V> lastEntry = null;
+        System.out.println("ram put");
         System.out.println(key + ": " + value);
 
-        for (Map.Entry<K, V> entry : linkedHashMap.entrySet()) {
+        //при добавлении сущности с ключом, который уже содержится в коллекции, удаляет старую запись и добавляет новую в начало списка
+        Iterator iterator = linkedHashMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            //todo -убрать каст
+            Map.Entry<K, V> entry = (Map.Entry<K, V>) iterator.next();
             if (entry.getKey().equals(key)) {
-                linkedHashMap.remove(entry.getKey(), entry.getValue());
+                System.out.println("remove exist element");
+                linkedHashMap.remove(entry);
+                break;
             }
-            if (linkedHashMap.size() > MAX_SIZE) {
-                for (Map.Entry<K, V> removeEntry : linkedHashMap.entrySet()) {
-                    lastEntry = removeEntry;
-                }
-            }
-            linkedHashMap.put(key, value);
-            return lastEntry;
 
         }
-        return null;
+
+
+        if (linkedHashMap.size() >= MAX_SIZE) {
+            for (Map.Entry<K, V> removeEntry : linkedHashMap.entrySet()) {
+                lastEntry = removeEntry;
+            }
+        }
+        linkedHashMap.put(key, value);
+        return lastEntry;
 
     }
 
@@ -50,11 +60,7 @@ public class CashLRU<K, V> implements Cash<K, V> {
 
         V value = linkedHashMap.get(key);
 
-        if (value != null) {
-
-            linkedHashMap.remove(key, value);
-            put(key, value);
-        }
+        put(key, value);
 
         return value;
     }

@@ -1,8 +1,9 @@
 package com.company;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class CashService<K, V> implements Cash<K, V> {
+public class CashService<K, V extends Serializable> implements Cash<K, V> {
 
     private MemoryCash memoryCash;
     private Cash ramCash;
@@ -19,18 +20,24 @@ public class CashService<K, V> implements Cash<K, V> {
     public Map.Entry<K, V> put(K key, V value) {
         lastEmpty = ramCash.put(key, value);
         if(lastEmpty != null) {
-            memoryCash.put(lastEmpty.getKey(), lastEmpty.getValue());
+            //todo  -убрать каст
+            memoryCash.put(lastEmpty.getKey(), (V)lastEmpty.getValue());
         }
         return null;
     }
 
     @Override
     public V get(K key) {
-        if (ramCash.get(key) != null) {
-            return (V) ramCash.get(key);
+        V value = (V) ramCash.get(key);
+        if (value  != null) {
+            return value;
         } else {
-            return (V) memoryCash.get(key);
+            value = (V) memoryCash.get(key);
+            if(value != null) {
+                ramCash.put(key, value);
+            }
         }
+        return value;
     }
 
     @Override

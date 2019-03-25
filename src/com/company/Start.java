@@ -2,11 +2,11 @@ package com.company;
 
 public class Start implements Runnable{
 
-    Cash<Integer, Integer> cash;
+    CashService<Integer, Integer> cashService;
     Thread thread;
 
-    Start(Cash cash) {
-        this.cash = cash;
+    Start(CashService cashService) {
+        this.cashService = cashService;
         thread = new Thread(this, "Potokich");
         thread.start();
         if(thread.isAlive()) {
@@ -25,20 +25,24 @@ public class Start implements Runnable{
             int a = (int)(Math.random()*15);
             int b = (int)(Math.random()*15);
 
-            cash.put(a,b);
+            cashService.put(a,b);
             i++;
 
         }
 
             System.out.println("Invocate get:");
-            if(cash.get(4)==null) cash.put(4, (int)(Math.random()*10));
-            if(cash.get(3)==null) cash.put(3, (int)(Math.random()*10));
-            if(cash.get(3)==null) cash.put(3, (int)(Math.random()*10));
-            if(cash.get(3)==null) cash.put(3, (int)(Math.random()*10));
-            if(cash.get(7)==null) cash.put(7, (int)(Math.random()*10));
-            if(cash.get(5)==null) cash.put(5, (int)(Math.random()*10));
-            if(cash.get(0)==null) cash.put(0, (int)(Math.random()*10));
-            if(cash.get(4)==null) cash.put(4, (int)(Math.random()*10));
+            if(cashService.get(4)==null) cashService.put(4, (int)(Math.random()*10));
+            if(cashService.get(3)==null) cashService.put(3, (int)(Math.random()*10));
+            if(cashService.get(3)==null) cashService.put(3, (int)(Math.random()*10));
+            if(cashService.get(3)==null) cashService.put(3, (int)(Math.random()*10));
+            if(cashService.get(7)==null) cashService.put(7, (int)(Math.random()*10));
+            if(cashService.get(5)==null) cashService.put(5, (int)(Math.random()*10));
+            if(cashService.get(0)==null) cashService.put(0, (int)(Math.random()*10));
+            if(cashService.get(4)==null) cashService.put(4, (int)(Math.random()*10));
+        System.out.println("get: " + cashService.get(3));
+        System.out.println("get: " + cashService.get(2));
+        System.out.println("get: " + cashService.get(3));
+        System.out.println("get: " + cashService.get(3));
 
     }
 

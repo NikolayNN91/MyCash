@@ -1,11 +1,9 @@
 package com.company;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class CashARC<K, V> implements Cash<K, V>{
-
-    //TODO -возможно сделать методы FileRW статическими
-    FileRW<K, Node<V>> fileRW = new FileRW<>();
+public class CashARC<K, V extends Serializable> implements Cash<K, V>{
 
     private final int MAX_SIZE;
     private Map<K, Node<V>> linkedHashMap;
@@ -33,10 +31,11 @@ public class CashARC<K, V> implements Cash<K, V>{
         return removeEntry;
     }
 
+    //удаляет и возвращает элемент с наименьщим числом вызовов
     private Map.Entry<K, V> remove() {
 
         Node<V> node = null;
-        Map.Entry<K, V> removeEntry;
+        Map.Entry<K, V> removeEntry = null;
         K key = null;
         long minDate = -1;
         long minCount = -1;
@@ -57,9 +56,8 @@ public class CashARC<K, V> implements Cash<K, V>{
             removeEntry = new AbstractMap.SimpleEntry<K, V> (key, node.getValue());
             System.out.println("Элемент remove: " + key + "/ " + node.getValue() + " count: " + node.getCount() + " date: " + node.getDate());
             linkedHashMap.remove(key, node);
-            return removeEntry;
         }
-        return null;
+        return removeEntry;
 
     }
 
@@ -69,12 +67,8 @@ public class CashARC<K, V> implements Cash<K, V>{
         Node<V> node = linkedHashMap.get(key);
 
         if(node == null) {
-
-          //  put(key, node); получить ключ и значение и вызвать put(key, values)
             return null;
-
         } else {
-
             node.incrementCount();
             return node.getValue();
         }
@@ -87,7 +81,7 @@ public class CashARC<K, V> implements Cash<K, V>{
     }
 
     //class stores invocation date, invocation frequency and values
-    private class Node<V> {
+    private class Node<V> implements Serializable{
 
         private final V value;
         private long date;
