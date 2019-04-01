@@ -8,7 +8,7 @@ public class FileRW<K, V extends Serializable> {
 
     private String path;
 
-    public void cashWrite(K key, V value, File directory) {
+    public void cashWrite(V value, File directory) {
 
         if (!directory.exists()) {
             directory.mkdir();
@@ -29,7 +29,7 @@ public class FileRW<K, V extends Serializable> {
 
     public V cashRead(String fileName) {
 
-        try (FileInputStream fileInputStream = new FileInputStream(new File("fileName"));
+        try (FileInputStream fileInputStream = new FileInputStream(new File(fileName));
              ObjectInputStream in = new ObjectInputStream(fileInputStream)) {
 
             V value = (V) in.readObject();
