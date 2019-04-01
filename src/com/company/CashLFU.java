@@ -34,8 +34,8 @@ public class CashLFU<K, V extends Serializable> implements Cash<K, V>{
     private Map.Entry<K, V> remove() {
 
 //        Node<V> node = null;
-        Map.Entry<K, V> removeEntry = null;
-        K key = null;
+//        Map.Entry<K, V> removeEntry = null;
+//        K key = null;
 //        long minDate = -1;
 //        long minCount = -1;
 
@@ -46,12 +46,14 @@ public class CashLFU<K, V extends Serializable> implements Cash<K, V>{
                 .min(Comparator.naturalOrder())
                 .orElse(-1L);
 
-        Node<V> node = linkedHashMap.entrySet()
+        Map.Entry<K, Node<V>> removeEntry = linkedHashMap.entrySet()
                 .stream()
-                .map(Map.Entry::getValue)
-                .filter(n -> n.getCount() <= min_count)
-                .min(Comparator.comparing(Node::getDate))
+                .filter(e -> e.getValue() != null)
+                .filter(n -> n.getValue().getCount() <= min_count)
+                .min(Comparator.comparing(n -> n.getValue().getDate()))
                 .orElse(null);
+
+
 
 //        for(Map.Entry<K, Node<V>> entry : linkedHashMap.entrySet()) {
 //            Node<V> currentNode = entry.getValue();
@@ -67,12 +69,20 @@ public class CashLFU<K, V extends Serializable> implements Cash<K, V>{
 //        }
 
 
-        if(node != null) {
-            removeEntry = new AbstractMap.SimpleEntry<> (key, node.getValue());
+        if(removeEntry!= null) {
+            Node<V> node = removeEntry.getValue();
+            K key = removeEntry.getKey();
+
+//            removeEntry = new AbstractMap.SimpleEntry<> (key, node.getValue());
             System.out.println("Элемент remove: " + key + "/ " + node.getValue() + " count: " + node.getCount() + " date: " + node.getDate());
             linkedHashMap.remove(key, node);
         }
-        return removeEntry;
+
+
+        return Optional.ofNullable(removeEntry)
+                .map(x -> new AbstractMap.SimpleEntry<> (x.getKey(), x.getValue().getValue()))
+                .orElse(null);
+//        return removeEntry;
 
     }
 
