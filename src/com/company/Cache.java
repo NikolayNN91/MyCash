@@ -3,7 +3,7 @@ package com.company;
 import java.io.Serializable;
 import java.util.Map;
 
-public interface Cash<K, V extends Serializable> {
+public interface Cache<K, V extends Serializable> {
 
     Map.Entry<K, V> put(K key, V value);
 

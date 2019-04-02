@@ -3,36 +3,33 @@ package com.company;
 import java.io.Serializable;
 import java.util.Map;
 
-public class CashService<K, V extends Serializable> implements Cash<K, V> {
+public class CacheService<K, V extends Serializable> implements Cache<K, V> {
 
-    private MemoryCash memoryCash;
-    private Cash ramCash;
-    private Map.Entry lastEmpty;
+    private FileLevelCache<K, V> fileLevelCache;
+    private Cache<K, V> ramCash;
 
-    public CashService(int memorySize, Cash ramCash) {
-        memoryCash = new MemoryCash(memorySize);
+    public CacheService(int memorySize, Cache ramCash) {
+        fileLevelCache = new FileLevelCache(memorySize);
         this.ramCash = ramCash;
-
     }
-
 
     @Override
     public Map.Entry<K, V> put(K key, V value) {
-        lastEmpty = ramCash.put(key, value);
+        Map.Entry<K, V> lastEmpty = ramCash.put(key, value);
+
         if(lastEmpty != null) {
-            //todo  -убрать каст
-            memoryCash.put(lastEmpty.getKey(), (V)lastEmpty.getValue());
+            fileLevelCache.put(lastEmpty.getKey(), lastEmpty.getValue());
         }
         return null;
     }
 
     @Override
     public V get(K key) {
-        V value = (V) ramCash.get(key);
+        V value = ramCash.get(key);
         if (value  != null) {
             return value;
         } else {
-            value = (V) memoryCash.get(key);
+            value = fileLevelCache.get(key);
             if(value != null) {
                 ramCash.put(key, value);
             }
@@ -43,7 +40,7 @@ public class CashService<K, V extends Serializable> implements Cash<K, V> {
     @Override
     public void clear() {
         ramCash.clear();
-        memoryCash.clear();
+        fileLevelCache.clear();
 
     }
 }

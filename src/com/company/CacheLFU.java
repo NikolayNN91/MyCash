@@ -3,41 +3,40 @@ package com.company;
 import java.io.Serializable;
 import java.util.*;
 
-public class CashLFU<K, V extends Serializable> implements Cash<K, V>{
+public class CacheLFU<K, V extends Serializable> implements Cache<K, V> {
 
     private final int MAX_SIZE;
     private Map<K, Node<V>> linkedHashMap;
 
-    public CashLFU(int size) {
+    public CacheLFU(int size) {
 
         MAX_SIZE = size;
         linkedHashMap = new LinkedHashMap<>(MAX_SIZE);
-
     }
 
-    //возвращает элемент, который был вытеснен при добавлении нового элемента, либо null если элементы не удалялись
+    /**
+     * возвращает элемент, который был вытеснен при добавлении нового элемента,
+     * либо null если элементы не удалялись
+     */
     @Override
     public Map.Entry<K, V> put(K key, V value) {
         Map.Entry<K, V> removeEntry = null;
         Node<V> node = new Node<>(value, System.currentTimeMillis());
 
-        if(linkedHashMap.size() >= MAX_SIZE) {
-            System.out.println("size : " + linkedHashMap.size());
+        if (linkedHashMap.size() >= MAX_SIZE) {
+            System.out.println("Current size of cache: " + linkedHashMap.size());
             removeEntry = remove();
         }
-            linkedHashMap.put(key, node);
-        System.out.println("Элемент добавлен: " + key + "/ " + node.getValue());
+        linkedHashMap.put(key, node);
+        System.out.println("Element is added: key=" + key + ", value=" + node.getValue());
         return removeEntry;
     }
 
-    //удаляет и возвращает элемент с наименьшим числом вызовов
+    /**
+     * удаляет и возвращает элемент с наименьшим числом вызовов,
+     * либо null если элементы не удалялись
+     */
     private Map.Entry<K, V> remove() {
-
-//        Node<V> node = null;
-//        Map.Entry<K, V> removeEntry = null;
-//        K key = null;
-//        long minDate = -1;
-//        long minCount = -1;
 
         long min_count = linkedHashMap.entrySet()
                 .stream()
@@ -53,37 +52,18 @@ public class CashLFU<K, V extends Serializable> implements Cash<K, V>{
                 .min(Comparator.comparing(n -> n.getValue().getDate()))
                 .orElse(null);
 
-
-
-//        for(Map.Entry<K, Node<V>> entry : linkedHashMap.entrySet()) {
-//            Node<V> currentNode = entry.getValue();
-//            K currentKey = entry.getKey();
-//            if((currentNode.getCount() < minCount || minCount < 0) || ((currentNode.getCount() == minCount && currentNode.getDate() < minDate) || minDate < 0)) {
-//                node = currentNode;
-//                key = currentKey;
-//                minCount = currentNode.getCount();
-//                minDate = currentNode.getDate();
-//
-//            }
-
-//        }
-
-
-        if(removeEntry!= null) {
+        if (removeEntry != null) {
             Node<V> node = removeEntry.getValue();
             K key = removeEntry.getKey();
 
-//            removeEntry = new AbstractMap.SimpleEntry<> (key, node.getValue());
-            System.out.println("Элемент remove: " + key + "/ " + node.getValue() + " count: " + node.getCount() + " date: " + node.getDate());
+            System.out.println("Element is removed: key=" + key + ", value=" + node.getValue() + ", count=" + node.getCount() + ", date=" + node.getDate());
+
             linkedHashMap.remove(key, node);
         }
 
-
         return Optional.ofNullable(removeEntry)
-                .map(x -> new AbstractMap.SimpleEntry<> (x.getKey(), x.getValue().getValue()))
+                .map(x -> new AbstractMap.SimpleEntry<>(x.getKey(), x.getValue().getValue()))
                 .orElse(null);
-//        return removeEntry;
-
     }
 
     @Override
@@ -91,7 +71,7 @@ public class CashLFU<K, V extends Serializable> implements Cash<K, V>{
 
         Node<V> node = linkedHashMap.get(key);
 
-        if(node == null) {
+        if (node == null) {
             return null;
         } else {
             node.incrementCount();
@@ -101,18 +81,19 @@ public class CashLFU<K, V extends Serializable> implements Cash<K, V>{
 
     @Override
     public void clear() {
-
         linkedHashMap.clear();
     }
 
-    //class stores invocation date, invocation frequency and values
-    private class Node<V> implements Serializable{
+    /**
+     * класс инкапсулирует значение, частоту вызова и дату вызова хранимого элемента
+     */
+    private class Node<V> implements Serializable {
 
         private final V value;
         private long date;
         private long count;
 
-        public Node (V value, long date) {
+        public Node(V value, long date) {
             this.value = value;
             this.count = 1;
             this.date = date;
