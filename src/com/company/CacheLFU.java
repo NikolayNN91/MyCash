@@ -24,8 +24,8 @@ public class CacheLFU<K, V extends Serializable> implements Cache<K, V> {
         Node<V> node = new Node<>(value, System.currentTimeMillis());
 
         if (linkedHashMap.size() >= MAX_SIZE) {
-            System.out.println("Current size of cache: " + linkedHashMap.size());
             removeEntry = remove();
+            System.out.println("Remove last element from ram: key=" + removeEntry.getKey() + ", value=" + removeEntry.getValue() + ", size=" + linkedHashMap.size());
         }
         linkedHashMap.put(key, node);
         System.out.println("Element is added: key=" + key + ", value=" + node.getValue());

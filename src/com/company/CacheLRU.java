@@ -35,20 +35,23 @@ public class CacheLRU<K, V extends Serializable> implements Cache<K, V> {
         /**   при добавлении сущности с ключом, который уже содержится в коллекции,
          *   удаляет старую запись и добавляет новую в начало списка
          */
-        Iterator<Map.Entry<K, V>> iterator = linkedHashMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<K, V> entry = iterator.next();
-            if (entry.getKey().equals(key)) {
-                System.out.println("remove exist element");
-                linkedHashMap.remove(entry);
-                break;
-            }
-        }
+//        Iterator<Map.Entry<K, V>> iterator = linkedHashMap.entrySet().iterator();
+//        while (iterator.hasNext()) {
+//            Map.Entry<K, V> entry = iterator.next();
+//            if (entry.getKey().equals(key)) {
+//                linkedHashMap.remove(entry.getKey());
+//                break;
+//            }
+//        }
+        linkedHashMap.remove(key);
+
 
         if (linkedHashMap.size() >= MAX_SIZE) {
-            for (Map.Entry<K, V> removeEntry : linkedHashMap.entrySet()) {
-                lastEntry = removeEntry;
-            }
+//            for (Map.Entry<K, V> removeEntry : linkedHashMap.entrySet()) {
+//                lastEntry = removeEntry;
+//            }
+            lastEntry=linkedHashMap.entrySet().iterator().next();
+            System.out.println("Remove last element from ram: key=" + lastEntry.getKey() + ", value=" + lastEntry.getValue() + ", size=" + linkedHashMap.size());
         }
         linkedHashMap.put(key, value);
         return lastEntry;
