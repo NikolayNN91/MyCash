@@ -30,13 +30,13 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
     @Override
     public Map.Entry<K, V> put(K key, V value) {
 
-        Map.Entry<K, String> firstEntry;
+        Map.Entry<K, String> firstEntry = null;
 
         filePath = "resource/" + UUID.randomUUID().toString() + ".txt";
 
         /**
-         * удаляет элемент с идентичным ключом из коллекции
-         * (затем положим ключ в начало списка)
+         * удаляет элемент с идентичным ключом из коллекции и директории
+         * (затем положим ключ и элемент в начало списка и директорию соответственно с новым именем файла)
          */
         pathMap.remove(key);
         fileRemove(key);
@@ -56,7 +56,7 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
         pathMap.put(key, filePath);
         cacheWrite(value, filePath);
 
-        return null;
+        return (Map.Entry<K, V>) firstEntry;
     }
 
     /**
@@ -89,7 +89,7 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
         }
     }
 
-    public void fileRemove(K key) {
+    private void fileRemove(K key) {
         String fileName = pathMap.get(key);
         File[] fileArray = directory.listFiles();
         for (File file : fileArray) {
