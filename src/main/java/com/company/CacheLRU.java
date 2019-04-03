@@ -14,7 +14,7 @@ public class CacheLRU<K, V extends Serializable> implements Cache<K, V> {
     public CacheLRU(int size) {
         MAX_SIZE = size;
 
-        linkedHashMap = new LinkedHashMap<>(MAX_SIZE) {
+        linkedHashMap = new LinkedHashMap<K, V>(MAX_SIZE) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
                 return linkedHashMap.size() > MAX_SIZE;
@@ -23,11 +23,10 @@ public class CacheLRU<K, V extends Serializable> implements Cache<K, V> {
     }
 
     /**
-     *  возвращает последний элемент, который был вытеснен из Мар при добавлении нового элемента,
-     * если элемент не удалялся возвращает null;
      *  при добавлении сущности с ключом, который уже содержится в коллекции,
      * удаляет старую запись и добавляет новую в начало списка
-     * @return последний элемент в Map, который будет удален и добавлен в Cache 2-го уровня
+     * @return последний элемент в Map, который будет удален и добавлен в Cache 2-го уровня,
+     * если элемент не удалялся, возвращает null
      */
     @Override
     public Map.Entry<K, V> put(K key, V value) {

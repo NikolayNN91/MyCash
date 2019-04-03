@@ -15,7 +15,11 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
         MAX_SIZE = size;
         directory = new File("resource");
 
-        pathMap = new LinkedHashMap<>(MAX_SIZE) {
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+
+        pathMap = new LinkedHashMap<K, String>(MAX_SIZE) {
             @Override
             protected boolean removeEldestEntry(Map.Entry<K, String> eldest) {
                 return pathMap.size() > MAX_SIZE;
@@ -97,10 +101,6 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
     }
 
     private void cacheWrite(V value, String filePath) {
-
-        if (!directory.exists()) {
-            directory.mkdir();
-        }
 
         String path = filePath;
 

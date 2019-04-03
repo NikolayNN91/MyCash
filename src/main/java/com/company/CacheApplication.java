@@ -1,6 +1,7 @@
 package com.company;
 
 
+
 public class CacheApplication {
     public static void main(String[] args) {
 
@@ -30,7 +31,7 @@ public class CacheApplication {
         System.out.println("get: " + cacheService.get(3));
 
 
-        cacheService.clear();
+        //cacheService.clear();
     }
 
 
