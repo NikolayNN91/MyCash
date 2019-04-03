@@ -4,10 +4,10 @@ package com.company;
 public class CacheApplication {
     public static void main(String[] args) {
 
-        CacheService<Integer, Integer> cacheService = new CacheService(3, new CacheLRU(3));
+        CacheService<Integer, Integer> cacheService = new CacheService(10, new CacheLRU(10));
 
         int i=0;
-        while (i<10) {
+        while (i<100) {
             int a = (int)(Math.random()*15);
             int b = (int)(Math.random()*15);
 
@@ -30,7 +30,7 @@ public class CacheApplication {
         System.out.println("get: " + cacheService.get(3));
 
 
-//        cacheService.clear();
+        cacheService.clear();
     }
 
 

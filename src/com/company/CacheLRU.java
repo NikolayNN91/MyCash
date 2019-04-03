@@ -23,8 +23,11 @@ public class CacheLRU<K, V extends Serializable> implements Cache<K, V> {
     }
 
     /**
-     * возвращает последний элемент, который был вытеснен из Мар при добавлении нового элемента,
-     * если элемент не удалялся возвращает null
+     *  возвращает последний элемент, который был вытеснен из Мар при добавлении нового элемента,
+     * если элемент не удалялся возвращает null;
+     *  при добавлении сущности с ключом, который уже содержится в коллекции,
+     * удаляет старую запись и добавляет новую в начало списка
+     * @return последний элемент в Map, который будет удален и добавлен в Cache 2-го уровня
      */
     @Override
     public Map.Entry<K, V> put(K key, V value) {
@@ -32,24 +35,9 @@ public class CacheLRU<K, V extends Serializable> implements Cache<K, V> {
 
         System.out.println("Put in ram: key=" + key + ", value=" + value);
 
-        /**   при добавлении сущности с ключом, который уже содержится в коллекции,
-         *   удаляет старую запись и добавляет новую в начало списка
-         */
-//        Iterator<Map.Entry<K, V>> iterator = linkedHashMap.entrySet().iterator();
-//        while (iterator.hasNext()) {
-//            Map.Entry<K, V> entry = iterator.next();
-//            if (entry.getKey().equals(key)) {
-//                linkedHashMap.remove(entry.getKey());
-//                break;
-//            }
-//        }
         linkedHashMap.remove(key);
 
-
         if (linkedHashMap.size() >= MAX_SIZE) {
-//            for (Map.Entry<K, V> removeEntry : linkedHashMap.entrySet()) {
-//                lastEntry = removeEntry;
-//            }
             lastEntry=linkedHashMap.entrySet().iterator().next();
             System.out.println("Remove last element from ram: key=" + lastEntry.getKey() + ", value=" + lastEntry.getValue() + ", size=" + linkedHashMap.size());
         }
@@ -62,7 +50,6 @@ public class CacheLRU<K, V extends Serializable> implements Cache<K, V> {
 
         V value = linkedHashMap.get(key);
 
-        put(key, value);
         return value;
     }
 

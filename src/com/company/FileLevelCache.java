@@ -26,8 +26,6 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
     @Override
     public Map.Entry<K, V> put(K key, V value) {
 
-        System.out.println("Put in file: key=" + key + ", value=" + value);
-
         Map.Entry<K, String> firstEntry;
 
         filePath = "resource/" + UUID.randomUUID().toString() + ".txt";
@@ -36,22 +34,6 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
          * удаляет элемент с идентичным ключом из коллекции
          * (затем положим ключ в начало списка)
          */
-
-//        Iterator<Map.Entry<K, String>> iterator = pathMap.entrySet().iterator();
-//        Map.Entry<K, String> entry;
-//        while (iterator.hasNext()) {
-//            entry = iterator.next();
-//
-//            System.out.println("entry.getKey =" + entry.getKey());
-//            System.out.println("key =" + key);
-//            System.out.println();
-//
-//            if (entry.getKey().equals(key)) {
-//                pathMap.remove(entry.getKey(), entry.getValue());
-//                fileRemove(entry.getKey());
-//                break;
-//            }
-//        }
         pathMap.remove(key);
         fileRemove(key);
 
@@ -82,13 +64,16 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
      */
     @Override
     public V get(K key) {
-        String fileName = pathMap.get(key);
-        V value = cacheRead(fileName);
+        filePath = null;
+        filePath = pathMap.get(key);
+        V value = null;
 
-        if (fileName != null) {
+        if (filePath != null) {
+            value = cacheRead(filePath);
             fileRemove(key);
             pathMap.remove(key);
         }
+
         return value;
     }
 
@@ -105,7 +90,7 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
         File[] fileArray = directory.listFiles();
         for (File file : fileArray) {
             if (("resource/" + file.getName()).equals(fileName)) {
-                System.out.println("file is removed");
+                System.out.println("File is removed from directory: key=" + key  + ", file_name=" + fileName);
                 file.delete();
             }
         }
@@ -122,7 +107,7 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
         try (FileOutputStream fileOutputStream = new FileOutputStream(new File(path));
              ObjectOutputStream out = new ObjectOutputStream(fileOutputStream)) {
 
-            System.out.println("Put in file: value=" + value);
+            System.out.println("Put in file: value=" + value  + ", file_name=" + path);
             out.writeObject(value);
             out.flush();
 
@@ -133,16 +118,12 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
 
     private V cacheRead(String fileName) {
 
-        if (fileName == null) {
-            System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        }
-
         try (FileInputStream fileInputStream = new FileInputStream(new File(fileName));
              ObjectInputStream in = new ObjectInputStream(fileInputStream)) {
 
             V value = (V) in.readObject();
 
-            System.out.println("Read value from file: " + value);
+            System.out.println("Read value from file: value=" + value + ", file_name=" + fileName);
 
             return value;
 
