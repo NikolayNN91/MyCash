@@ -48,9 +48,9 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
          */
         if (pathMap.size() >= MAX_SIZE) {
 
+
             firstEntry = pathMap.entrySet().iterator().next();
             fileRemove(firstEntry.getKey());
-            System.out.println("Remove last element from directory: key=" + firstEntry.getKey() + ", value=" + firstEntry.getValue() + ", size=" + pathMap.size());
         }
 
         pathMap.put(key, filePath);
@@ -94,7 +94,7 @@ public class FileLevelCache<K, V extends Serializable> implements Cache<K, V> {
         File[] fileArray = directory.listFiles();
         for (File file : fileArray) {
             if (("resource/" + file.getName()).equals(fileName)) {
-                System.out.println("File is removed from directory: key=" + key  + ", file_name=" + fileName);
+                System.out.println("File is removed from directory: key=" + key  + ", file_name=" + fileName + ", size=" + pathMap.size());
                 file.delete();
             }
         }

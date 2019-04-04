@@ -1,21 +1,28 @@
 package com.company;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CacheLRUTest {
 
-    private static CacheLRU cacheLRU;
+    private CacheLRU cacheLRU;
 
-    @BeforeAll
-    public static void init() {
+    @BeforeEach
+    public void init() {
+
         cacheLRU = new CacheLRU(10);
+
+        cacheLRU.put(1, 1);
+        cacheLRU.put(2, 2);
+        cacheLRU.put(3, 3);
+        cacheLRU.put(4, 4);
+        cacheLRU.put(5, 5);
+        cacheLRU.put(6, 6);
+        cacheLRU.put(7, 7);
+        cacheLRU.put(8, 8);
+        cacheLRU.put(9, 9);
+        cacheLRU.put(10, 10);
     }
 
     @AfterEach
@@ -26,53 +33,21 @@ class CacheLRUTest {
     @Test
     public void put() {
 
-        Integer extend = 1;
+        int result = (int)cacheLRU.put(11, 11).getValue();
 
-        cacheLRU.put(1, 1);
-        cacheLRU.put(2, 2);
-        cacheLRU.put(3, 3);
-        cacheLRU.put(4, 4);
-        cacheLRU.put(5, 5);
-        cacheLRU.put(6, 6);
-        cacheLRU.put(7, 7);
-        cacheLRU.put(8, 8);
-        cacheLRU.put(9, 9);
-        cacheLRU.put(10, 10);
-        Map.Entry entry = cacheLRU.put(11, 11);
-
-        assertEquals(extend, entry.getValue());
-
-
+        assertEquals(1, result);
     }
 
     @Test
-    void get() {
+    public void get() {
 
-        cacheLRU.put(1, 1);
-        cacheLRU.put(2, 2);
-        cacheLRU.put(3, 3);
-        cacheLRU.put(4, 4);
-        cacheLRU.put(5, 5);
-        cacheLRU.put(6, 6);
-        cacheLRU.put(7, 7);
-        cacheLRU.put(8, 8);
-        cacheLRU.put(9, 9);
-        cacheLRU.put(10, 10);
-
-        Integer extend = 5;
-
-        assertEquals(extend, cacheLRU.get(5));
+        assertEquals(5, cacheLRU.get(5));
     }
 
     @Test
-    void clear() {
-
-        cacheLRU.put(1, 1);
+    public void clear() {
 
         cacheLRU.clear();
-
         assertTrue(cacheLRU.get(1) == null);
-
-
     }
 }

@@ -24,6 +24,7 @@ class FileLevelCacheTest {
         fileLevelCache.put(8, 8);
         fileLevelCache.put(9, 9);
         fileLevelCache.put(10, 10);
+
     }
 
     @AfterEach
@@ -33,7 +34,10 @@ class FileLevelCacheTest {
 
     @Test
     void put() {
-        assertEquals(1, fileLevelCache.get(fileLevelCache.put(11, 11).getKey()));
+
+        int result = (int) fileLevelCache.put(11, 11).getKey();
+
+        assertEquals(1, result);
         assertEquals(11, fileLevelCache.get(11));
 
     }
@@ -41,6 +45,7 @@ class FileLevelCacheTest {
     @Test
     void get() {
         assertEquals(5, fileLevelCache.get(5));
+        assertTrue(fileLevelCache.get(5) == null);
     }
 
     @Test

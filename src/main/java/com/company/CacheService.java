@@ -31,8 +31,7 @@ public class CacheService<K, V extends Serializable> implements Cache<K, V> {
         } else {
             value = fileLevelCache.get(key);
             if(value != null) {
-                //todo - закинуть во 2-й уровень
-                ramCache.put(key, value);
+                put(key, value);
             }
         }
         return value;

@@ -3,54 +3,74 @@ package com.company;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
+import java.util.AbstractMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CacheServiceTest {
 
-    private CacheService cacheService;
+    private CacheService cacheServiceLRU;
+    private Cache cacheLRU;
+    private FileLevelCache fileLevelCache;
+
 
     @BeforeEach
     public void init() {
-        cacheService = new CacheService(10, new CacheLRU(10));
 
-        cacheService.put(1, 1);
-        cacheService.put(2, 2);
-        cacheService.put(3, 3);
-        cacheService.put(4, 4);
-        cacheService.put(5, 5);
-        cacheService.put(6, 6);
-        cacheService.put(7, 7);
-        cacheService.put(8, 8);
-        cacheService.put(9, 9);
-        cacheService.put(10, 10);
-        cacheService.put(11, 11);
+        cacheLRU = mock(CacheLRU.class);
+        fileLevelCache = mock(FileLevelCache.class);
+
+        cacheServiceLRU = new CacheService(10, cacheLRU);
     }
 
     @AfterEach
     public void end() {
-        cacheService.clear();
+
     }
 
     @Test
-    @Disabled
     void put() {
 
 
+        when(cacheLRU.put(5, 5)).thenReturn(new AbstractMap.SimpleEntry(1, 1));
+        when(fileLevelCache.put(5, 5)).thenReturn(new AbstractMap.SimpleEntry(1, 1));
+        assertEquals(1, cacheServiceLRU.put(5, 5).getValue());
+//---------------------------------------------------------------------------------------
+        when(cacheLRU.put(5, 5)).thenReturn(null);
+        when(fileLevelCache.put(5, 5)).thenReturn(new AbstractMap.SimpleEntry(1, 1));
+        assertEquals(null, cacheServiceLRU.put(5, 5));
     }
 
     @Test
     void get() {
-        assertEquals(1, cacheService.get(1));
-        assertEquals(2, cacheService.get(2));
+
+        when(cacheLRU.get(5)).thenReturn(5);
+        when(fileLevelCache.get(5)).thenReturn(5);
+        assertEquals(5, fileLevelCache.get(5));
+//---------------------------------------------------------------------------------------
+
+        when(cacheLRU.get(5)).thenReturn(null);
+        when(fileLevelCache.get(5)).thenReturn(5);
+        assertEquals(5, fileLevelCache.get(5));
+//---------------------------------------------------------------------------------------
+
+        when(cacheLRU.get(5)).thenReturn(5);
+        when(fileLevelCache.get(5)).thenReturn(5);
+        assertEquals(5, fileLevelCache.get(5));
+//---------------------------------------------------------------------------------------
+
+        when(cacheLRU.get(5)).thenReturn(null);
+        when(fileLevelCache.get(5)).thenReturn(null);
+        assertEquals( null, fileLevelCache.get(5));
+//---------------------------------------------------------------------------------------
+
     }
 
     @Test
     void clear() {
-
-        cacheService.clear();
-
-        assertTrue(cacheService.get(1)==null);
 
     }
 }
